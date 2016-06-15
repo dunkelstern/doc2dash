@@ -120,15 +120,19 @@ def patch_anchors(parser, show_progressbar):
     def patch_files(files):
         for fname, entries in files:
             full_path = os.path.join(parser.doc_path, fname)
-            with codecs.open(full_path, mode="r", encoding="utf-8") as fp:
-                soup = BeautifulSoup(fp, 'lxml')
-                for entry in entries:
-                    if not parser.find_and_patch_entry(soup, entry):
-                        log.debug(u"Can't find anchor {} in {}."
-                                  .format(entry.anchor,
-                                          click.format_filename(fname)))
-            with open(full_path, mode="wb") as fp:
-                fp.write(soup.encode("utf-8"))
+            try:
+                with codecs.open(full_path, mode="r", encoding="utf-8") as fp:
+                    soup = BeautifulSoup(fp, 'lxml')
+                    for entry in entries:
+                        if not parser.find_and_patch_entry(soup, entry):
+                            log.debug(u"Can't find anchor {} in {}."
+                                      .format(entry.anchor,
+                                              click.format_filename(fname)))
+                with open(full_path, mode="wb") as fp:
+                    fp.write(soup.encode("utf-8"))
+            except FileNotFoundError:
+                # in some cases there will be no modindex and we crash here
+                pass
 
     if show_progressbar is True:
         with click.progressbar(
