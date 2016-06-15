@@ -41,6 +41,13 @@ INV_TO_TYPE = {
     "type": types.TYPE,
     "variable": types.VARIABLE,
     "var": types.VARIABLE,
+    "get": types.INTERFACE,
+    "post": types.INTERFACE,
+    "put": types.INTERFACE,
+    "patch": types.INTERFACE,
+    "head": types.INTERFACE,
+    "options": types.INTERFACE,
+    "delete": types.INTERFACE,
 }
 
 
@@ -102,7 +109,8 @@ def _inv_to_entries(inv):
     """
     for type_key, val in iteritems(inv):
         try:
-            t = INV_TO_TYPE[type_key.split(":")[-1]]
+            parts = type_key.split(":")
+            t = INV_TO_TYPE[parts[-1]]
             for el, data in iteritems(val):
                 """
                 Discard the anchors between head and tail to make it
@@ -113,6 +121,10 @@ def _inv_to_entries(inv):
                     path_str = "#".join((path_tuple[0], path_tuple[-1]))
                 else:
                     path_str = data[2]
+
+                # For HTTP documentation add method
+                if parts[0] == 'http':
+                    el = parts[1].upper() + " " + el
                 yield ParserEntry(name=el, type=t, path=path_str)
         except KeyError:
             pass
