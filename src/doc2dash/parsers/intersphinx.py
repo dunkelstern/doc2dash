@@ -48,6 +48,7 @@ INV_TO_TYPE = {
     "head": types.INTERFACE,
     "options": types.INTERFACE,
     "delete": types.INTERFACE,
+    "label": types.ENTRIES,
 }
 
 
@@ -125,6 +126,13 @@ def _inv_to_entries(inv):
                 # For HTTP documentation add method
                 if parts[0] == 'http':
                     el = parts[1].upper() + " " + el
+
+                # if we found an entry try to extract its title and emit as guide if it has one
+                if t == types.ENTRIES:
+                    if len(data) == 4 and data[3] and data[3] != '-':
+                        yield ParserEntry(name=data[3], type=types.GUIDES, path=path_str)
+                        continue
+
                 yield ParserEntry(name=el, type=t, path=path_str)
         except KeyError:
             pass
