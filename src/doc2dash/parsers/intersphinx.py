@@ -127,6 +127,10 @@ def _inv_to_entries(inv):
                 if parts[0] == 'http':
                     el = parts[1].upper() + " " + el
 
+                # skip modindex and genindex
+                if path_str.startswith('py-modindex.html') or path_str.startswith('genindex.html'):
+                    continue
+
                 # if we found an entry try to extract its title and emit as guide if it has one
                 if t == types.ENTRIES:
                     if len(data) == 4 and data[3] and data[3] != '-':
